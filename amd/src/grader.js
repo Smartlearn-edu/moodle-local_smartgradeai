@@ -1,43 +1,26 @@
+/**
+ * Smart Grade AI AMD module.
+ *
+ * @module     local_smartgradeai/grader
+ * @package    local_smartgradeai
+ * @copyright  2026 Mohammad Nabil <mohammad@smartlearn.education>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function ($, Ajax, Notification, Str) {
     return {
         init: function (params) {
-            console.log('=== AUTOGRADEHELPER AMD MODULE INIT ===');
-            console.log('Smart Grade AI: Init called with params:', params);
-
-            var assignmentId, courseId, userId, submissionId, isTeacher;
-
-            // Handle parameters
-            if (typeof params === 'number') {
-                assignmentId = params;
-                courseId = null;
-                isTeacher = true; // Assume teacher if old style call
-            } else if (params && typeof params === 'object') {
-                assignmentId = params.assignmentid;
-                courseId = params.courseid;
-                userId = params.userid;
-                submissionId = params.submissionid;
-                isTeacher = params.isteacher;
-            } else {
-                // Fallback
-                var urlParams = new URLSearchParams(window.location.search);
-                assignmentId = urlParams.get('id') ? parseInt(urlParams.get('id')) : null;
-            }
-
-            console.log('AUTOGRADEHELPER Params:', { assignmentId, courseId, userId, submissionId, isTeacher });
-
-            if (!assignmentId) {
-                console.error('AUTOGRADEHELPER: No assignment ID available!');
+            if (!params || typeof params !== 'object' || !params.assignmentid) {
                 return;
             }
 
-            $(document).ready(function () {
-                // Find container
-                var container = $('.submissionstatustable').first();
-                if (!container.length) container = $('.gradingtable').first();
-                if (!container.length) container = $('.grading-actions-form');
-                if (!container.length) container = $('[role="main"]');
+            var assignmentId = params.assignmentid;
+            var courseId = params.courseid;
+            var userId = params.userid;
+            var submissionId = params.submissionid;
+            var isTeacher = params.isteacher;
 
-                // 1. TEACHER BUTTON
+            $(document).ready(function () {
+                // 1. TEACHER BUTTON.
                 if (isTeacher) {
                     Str.get_string('grade_with_ai_button', 'local_smartgradeai').done(function (buttonLabel) {
                         var button = $('<button class="btn btn-primary ml-2">' + buttonLabel + '</button>');
@@ -50,34 +33,84 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function ($, Aj
                                 args: { assignmentid: assignmentId }
                             }])[0].done(function (response) {
                                 if (response.success) {
-                                    Str.get_string('trigger_success', 'local_smartgradeai').done(function (s) { Notification.alert('Success', s, 'Ok'); });
+                                    Str.get_string('trigger_success', 'local_smartgradeai').done(function (s) {
+                                        Notification.alert('Success', s, 'Ok');
+                                    });
                                 } else {
                                     Notification.alert('Error', response.message, 'Ok');
                                 }
-                            }).fail(Notification.exception).always(function () { button.prop('disabled', false); });
+                            }).fail(Notification.exception).always(function () {
+                                button.prop('disabled', false);
+                            });
                         });
 
-                        // Append logic
-                        if ($('.grading-actions-form').length) $('.grading-actions-form').append(button);
-                        else if ($('.submissionlinks').length) $('.submissionlinks').append(button);
-                        else container.before(button);
+                        // Append to the page.
+                        if ($('.grading-actions-form').length) {
+                            $('.grading-actions-form').append(button);
+                        } else if ($('.submissionlinks').length) {
+                            $('.submissionlinks').append(button);
+                        } else {
+                            var container = $('.submissionstatustable').first();
+                            if (!container.length) {
+                                container = $('.gradingtable').first();
+                            }
+                            if (!container.length) {
+                                container = $('[role="main"]');
+                            }
+                            container.before(button);
+                        }
                     });
                 }
 
-                // 2. STUDENT BUTTON (If submission exists)
-                if (submissionId) {
-                    // We'll use a hardcoded label "Check AI Feedback" if string missing, or fetch from lang
-                    // Using a promise for string consistent with above
-                    // NOTE: You should add 'check_ai_feedback' to lang file later
-                    var btnLabel = "Check AI Feedback";
+                // 2. STUDENT BUTTON.
+                if (!isTeacher) {
+                    // Avoid duplicates.
+                    if ($('#smartgradeai-student-btn').length) {
+                        return;
+                    }
 
-                    var studentButton = $('<button class="btn btn-info ml-2">' + btnLabel + '</button>');
+                    var btnLabel = 'Check AI Feedback';
+                    var isInitiallyDisabled = false;
+                    var btnClass = 'btn btn-info ml-2';
+
+                    // Multi-attempt logic.
+                    var maxAttempts = params.maxattempts || 1;
+                    var attemptNum = params.attemptnumber || 0;
+                    var isMultiAttempt = (maxAttempts === -1) || (maxAttempts > 1);
+                    var hasChance = (maxAttempts === -1) || ((attemptNum + 1) < maxAttempts);
+                    var enableOverride = isMultiAttempt && hasChance;
+
+                    if (!params.hassubmission || params.submissionstatus !== 'submitted') {
+                        btnLabel = 'Submit to use AI Feedback';
+                        isInitiallyDisabled = true;
+                        btnClass = 'btn btn-secondary ml-2';
+                    } else if (params.haspassed) {
+                        btnLabel = 'Passed - Great Job!';
+                        isInitiallyDisabled = true;
+                        btnClass = 'btn btn-success ml-2';
+                    } else if (params.isgraded && !enableOverride) {
+                        btnLabel = 'Feedback Available';
+                        isInitiallyDisabled = true;
+                        btnClass = 'btn btn-success ml-2';
+                    } else if (params.jobstatus === 'pending') {
+                        var diff = params.now - params.jobtime;
+                        if (diff < 600) {
+                            var minsLeft = Math.ceil((600 - diff) / 60);
+                            btnLabel = 'AI is thinking... (' + minsLeft + 'm)';
+                            isInitiallyDisabled = true;
+                            btnClass = 'btn btn-secondary ml-2';
+                        }
+                    }
+
+                    var studentButton = $('<button id="smartgradeai-student-btn" class="' + btnClass + '">' + btnLabel + '</button>');
+                    if (isInitiallyDisabled) {
+                        studentButton.prop('disabled', true);
+                    }
+
                     studentButton.click(function (e) {
                         e.preventDefault();
                         studentButton.prop('disabled', true);
-                        console.log('Student AI Button Clicked. Sending:', { submissionId, assignmentId, courseId, userId });
 
-                        // Call new webservice
                         Ajax.call([{
                             methodname: 'local_smartgradeai_check_feedback',
                             args: {
@@ -87,28 +120,28 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function ($, Aj
                                 userid: userId
                             }
                         }])[0].done(function (response) {
-                            console.log('Feedback response:', response);
                             if (response.success) {
                                 Notification.alert('Feedback', response.message || 'Feedback request sent!', 'Ok');
+                                studentButton.text('Feedback request sent to AI Agent.');
+                                studentButton.prop('disabled', true);
+                                studentButton.removeClass('btn-info').addClass('btn-secondary');
                             } else {
                                 Notification.alert('Info', response.message || 'No feedback available yet.', 'Ok');
+                                studentButton.prop('disabled', false);
                             }
-                        }).fail(function (ex) {
-                            console.error(ex);
-                            // SIlently fail or show modest error
+                        }).fail(function () {
                             Notification.alert('Error', 'Could not fetch feedback status.', 'Ok');
-                        }).always(function () {
                             studentButton.prop('disabled', false);
                         });
                     });
 
-                    // Append logic - attempt to put it near submission status
-                    if ($('.submissionstatustable').length) {
-                        $('.submissionstatustable').after(studentButton);
-                    } else if ($('.submissionlinks').length) {
+                    // Append to the page.
+                    if ($('.submissionlinks').length) {
                         $('.submissionlinks').append(studentButton);
-                    } else {
-                        container.append(studentButton);
+                    } else if ($('.submissionstatustable').length) {
+                        $('.submissionstatustable').first().after(studentButton);
+                    } else if ($('[role="main"]').length) {
+                        $('[role="main"]').append(studentButton);
                     }
                 }
             });

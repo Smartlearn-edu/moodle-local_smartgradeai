@@ -90,6 +90,7 @@ $string['rejectdeletedraft'] = 'Reject (Delete Draft)';
 $string['cancel'] = 'Cancel';
 
 // Privacy
+$string['privacy:metadata'] = 'The Smart Grade AI plugin sends data to external AI services for grading and stores temporary review data, but does not store additional personal data beyond what is needed for grading.';
 $string['privacy:metadata:external:summary'] = 'To automatically grade assignments, this plugin sends data to an external AI service webhook.';
 $string['privacy:metadata:external:userid'] = 'The ID of the user whose submission is being graded or who requested feedback.';
 $string['privacy:metadata:external:courseid'] = 'The ID of the course containing the assignment.';

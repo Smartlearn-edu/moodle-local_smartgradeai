@@ -32,7 +32,7 @@ echo $OUTPUT->header();
 // Fetch pending reviews
 // Join with assignment and user tables for more info
 $sql = "SELECT r.id, r.assignmentid, r.submissionid, r.userid, r.timecreated,
-               a.name as assignmentname, c.fullname as coursename,
+               a.name as assignmentname, c.fullname as coursename, c.id as courseid,
                u.firstname, u.lastname
         FROM {local_smartgradeai_reviews} r
         JOIN {assign} a ON a.id = r.assignmentid
@@ -41,7 +41,51 @@ $sql = "SELECT r.id, r.assignmentid, r.submissionid, r.userid, r.timecreated,
         WHERE r.status = :status
         ORDER BY r.timecreated ASC";
 
-$reviews = $DB->get_records_sql($sql, ['status' => 'pending']);
+$all_reviews = $DB->get_records_sql($sql, ['status' => 'pending']);
+
+$reviews = [];
+if ($all_reviews) {
+    // Filter reviews to only those the current user has permission to grade
+    foreach ($all_reviews as $review) {
+        $coursecontext = context_course::instance($review->courseid);
+        if (has_capability('mod/assign:grade', $coursecontext)) {
+            $reviews[] = $review;
+        }
+    }
+}
+
+// Block students completely. If they have no pending reviews, we still need to
+// ensure they are at least a teacher in some course, or an admin.
+$is_admin = has_capability('moodle/site:config', context_system::instance());
+$can_grade_somewhere = false;
+
+// If they have reviews, they obviously can grade somewhere.
+if (!empty($reviews)) {
+    $can_grade_somewhere = true;
+} else {
+    // Check if they have assign:grade in ANY course context
+    // This is a bit heavy, but since they have no reviews, it's just a general access check.
+    // A simpler way is just to check if they have moodle/grade:viewall at system/coursecat level,
+    // or rely on the fact that if they are just a student, they shouldn't be here.
+    if ($is_admin) {
+        $can_grade_somewhere = true;
+    } else {
+        // Find if they are enrolled as a teacher anywhere
+        $teacher_courses = enrol_get_users_courses($USER->id, true, 'id');
+        foreach ($teacher_courses as $tc) {
+            $coursecontext = context_course::instance($tc->id);
+            if (has_capability('mod/assign:grade', $coursecontext)) {
+                $can_grade_somewhere = true;
+                break;
+            }
+        }
+    }
+}
+
+if (!$is_admin && !$can_grade_somewhere) {
+    // Throw standard capability exception to block the page load completely
+    require_capability('mod/assign:grade', context_system::instance());
+}
 
 if (empty($reviews)) {
     echo $OUTPUT->notification('No pending reviews found. Good job!', 'success');

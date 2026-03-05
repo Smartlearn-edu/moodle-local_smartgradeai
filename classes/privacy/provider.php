@@ -24,26 +24,34 @@
 
 namespace local_smartgradeai\privacy;
 
-use core_privacy\local\metadata\null_provider;
+use core_privacy\local\metadata\collection;
+use core_privacy\local\metadata\provider as metadata_provider;
 
 /**
  * Privacy API implementation for the Smart Grade AI plugin.
- *
- * This plugin does not store any personal data. It only provides functionality
- * to export grade data that is already stored by Moodle's core grade system.
- * The exported HTML files are generated on-demand and not persistently stored.
  */
-class provider implements null_provider
+class provider implements metadata_provider
 {
 
     /**
-     * Get the language string identifier with the component's language
-     * file to explain why this plugin stores no data.
+     * Get the metadata for the local_smartgradeai plugin.
      *
-     * @return string
+     * @param collection $collection The initialised collection to use.
+     * @return collection A listing of user data stored through this system.
      */
-    public static function get_reason(): string
+    public static function get_metadata(collection $collection): collection
     {
-        return 'privacy:metadata';
+        $collection->add_external_location_link(
+            'smartgradeai_external_ai',
+            [
+                'userid' => 'privacy:metadata:external:userid',
+                'courseid' => 'privacy:metadata:external:courseid',
+                'assignmentid' => 'privacy:metadata:external:assignmentid',
+                'submissionid' => 'privacy:metadata:external:submissionid',
+            ],
+            'privacy:metadata:external:summary'
+        );
+
+        return $collection;
     }
 }

@@ -77,3 +77,10 @@ $string['enable_review_mode'] = 'Enable Review Mode (Human-in-the-Loop)';
 $string['enable_review_mode_desc'] = 'If enabled, allows teachers to switch on "Review Mode" for assignments. In this mode, AI grades are saved as drafts requiring teacher approval.';
 $string['review_mode'] = 'Review Mode';
 $string['review_mode_desc'] = 'If enabled, AI grades will be saved as drafts and must be approved by a teacher before becoming final.';
+
+// Privacy
+$string['privacy:metadata:external:summary'] = 'To automatically grade assignments, this plugin sends data to an external AI service webhook.';
+$string['privacy:metadata:external:userid'] = 'The ID of the user whose submission is being graded or who requested feedback.';
+$string['privacy:metadata:external:courseid'] = 'The ID of the course containing the assignment.';
+$string['privacy:metadata:external:assignmentid'] = 'The ID of the assignment.';
+$string['privacy:metadata:external:submissionid'] = 'The ID of the submission being evaluated.';

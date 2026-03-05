@@ -78,6 +78,17 @@ $string['enable_review_mode_desc'] = 'If enabled, allows teachers to switch on "
 $string['review_mode'] = 'Review Mode';
 $string['review_mode_desc'] = 'If enabled, AI grades will be saved as drafts and must be approved by a teacher before becoming final.';
 
+// Review page.
+$string['reviewaigrade'] = 'Review AI Grade';
+$string['submissionby'] = 'Submission by {$a}';
+$string['aiproposedrubricscore'] = 'AI Proposed Rubric Score';
+$string['criterionid'] = 'Criterion ID';
+$string['levelid'] = 'Level ID';
+$string['remark'] = 'Remark';
+$string['approvesavetogradebook'] = 'Approve & Save to Gradebook';
+$string['rejectdeletedraft'] = 'Reject (Delete Draft)';
+$string['cancel'] = 'Cancel';
+
 // Privacy
 $string['privacy:metadata:external:summary'] = 'To automatically grade assignments, this plugin sends data to an external AI service webhook.';
 $string['privacy:metadata:external:userid'] = 'The ID of the user whose submission is being graded or who requested feedback.';

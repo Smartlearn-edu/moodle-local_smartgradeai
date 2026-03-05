@@ -51,8 +51,8 @@ if ($action && confirm_sesskey()) {
 $PAGE->set_context($context); // Set to assignment context so permissions check works
 $url = new moodle_url('/local/smartgradeai/review.php', ['id' => $id]);
 $PAGE->set_url($url);
-$PAGE->set_title('Review AI Grade');
-$PAGE->set_heading('Review AI Grade');
+$PAGE->set_title(get_string('reviewaigrade', 'local_smartgradeai'));
+$PAGE->set_heading(get_string('reviewaigrade', 'local_smartgradeai'));
 $PAGE->set_pagelayout('incourse'); // Show within course context? Or report? Incourse is better contextually.
 
 echo $OUTPUT->header();
@@ -63,7 +63,7 @@ if (isset($notification)) {
 
 $user = $DB->get_record('user', ['id' => $review->userid], '*', MUST_EXIST);
 
-echo $OUTPUT->heading('Submission by ' . fullname($user));
+echo $OUTPUT->heading(get_string('submissionby', 'local_smartgradeai', fullname($user)));
 
 // Display Rubric Preview
 $rubric_data = json_decode($review->rubric_data, true);
@@ -71,10 +71,14 @@ $rubric_data = json_decode($review->rubric_data, true);
 if ($rubric_data) {
     echo html_writer::start_tag('div', ['class' => 'card mb-3']);
     echo html_writer::start_tag('div', ['class' => 'card-body']);
-    echo html_writer::tag('h5', 'AI Proposed Rubric Score', ['class' => 'card-title']);
+    echo html_writer::tag('h5', get_string('aiproposedrubricscore', 'local_smartgradeai'), ['class' => 'card-title']);
 
     $table = new html_table();
-    $table->head = ['Criterion ID', 'Level ID', 'Remark'];
+    $table->head = [
+        get_string('criterionid', 'local_smartgradeai'),
+        get_string('levelid', 'local_smartgradeai'),
+        get_string('remark', 'local_smartgradeai'),
+    ];
     $table->data = [];
 
     foreach ($rubric_data as $item) {
@@ -95,15 +99,15 @@ echo html_writer::start_tag('div', ['class' => 'd-flex gap-2']);
 
 // Approve Button
 $approve_url = new moodle_url($url, ['action' => 'approve', 'sesskey' => sesskey()]);
-echo $OUTPUT->single_button($approve_url, 'Approve & Save to Gradebook', 'post', ['class' => 'btn-success']);
+echo $OUTPUT->single_button($approve_url, get_string('approvesavetogradebook', 'local_smartgradeai'), 'post', ['class' => 'btn-success']);
 
 // Reject Button
 $reject_url = new moodle_url($url, ['action' => 'reject', 'sesskey' => sesskey()]);
-echo $OUTPUT->single_button($reject_url, 'Reject (Delete Draft)', 'post', ['class' => 'btn-danger']);
+echo $OUTPUT->single_button($reject_url, get_string('rejectdeletedraft', 'local_smartgradeai'), 'post', ['class' => 'btn-danger']);
 
 // Cancel/Back
 $back_url = new moodle_url('/local/smartgradeai/reviews.php');
-echo $OUTPUT->single_button($back_url, 'Cancel', 'get', ['class' => 'btn-secondary']);
+echo $OUTPUT->single_button($back_url, get_string('cancel', 'local_smartgradeai'), 'get', ['class' => 'btn-secondary']);
 
 echo html_writer::end_tag('div');
 

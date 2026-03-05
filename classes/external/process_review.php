@@ -13,7 +13,6 @@ namespace local_smartgradeai\external;
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir . '/externallib.php');
-require_once($CFG->dirroot . '/local/smartgradeai/classes/grader_helper.php');
 
 use external_api;
 use external_function_parameters;

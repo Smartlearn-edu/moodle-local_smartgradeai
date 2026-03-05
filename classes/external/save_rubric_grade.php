@@ -172,7 +172,6 @@ class save_rubric_grade extends external_api
             ];
         } else {
             // NORMAL MODE: Save to Gradebook directly
-            require_once(__DIR__ . '/../grader_helper.php');
             return \local_smartgradeai\grader_helper::save_rubric_grade($assignmentid, $userid, $rubric_items, $USER->id);
         }
     }

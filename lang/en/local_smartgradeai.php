@@ -84,3 +84,15 @@ $string['privacy:metadata:external:userid'] = 'The ID of the user whose submissi
 $string['privacy:metadata:external:courseid'] = 'The ID of the course containing the assignment.';
 $string['privacy:metadata:external:assignmentid'] = 'The ID of the assignment.';
 $string['privacy:metadata:external:submissionid'] = 'The ID of the submission being evaluated.';
+
+$string['privacy:metadata:reviews:summary'] = 'Stores temporary pending AI grades for human review.';
+$string['privacy:metadata:reviews:userid'] = 'The user whose submission was graded.';
+$string['privacy:metadata:reviews:assignmentid'] = 'The assignment the submission belongs to.';
+$string['privacy:metadata:reviews:submissionid'] = 'The submission being reviewed.';
+$string['privacy:metadata:reviews:grade'] = 'The AI proposed grade.';
+$string['privacy:metadata:reviews:rubric_data'] = 'The AI proposed rubric breakdown.';
+
+$string['privacy:metadata:jobs:summary'] = 'Tracks the status of background AI grading and feedback requests.';
+$string['privacy:metadata:jobs:submissionid'] = 'The submission the job relates to.';
+$string['privacy:metadata:jobs:status'] = 'The current status of the AI request.';
+$string['privacy:metadata:jobs:error_message'] = 'Any errors returned by the AI service.';

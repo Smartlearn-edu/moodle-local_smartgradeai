@@ -52,6 +52,28 @@ class provider implements metadata_provider
             'privacy:metadata:external:summary'
         );
 
+        $collection->add_database_table(
+            'local_smartgradeai_reviews',
+            [
+                'userid' => 'privacy:metadata:reviews:userid',
+                'assignmentid' => 'privacy:metadata:reviews:assignmentid',
+                'submissionid' => 'privacy:metadata:reviews:submissionid',
+                'grade' => 'privacy:metadata:reviews:grade',
+                'rubric_data' => 'privacy:metadata:reviews:rubric_data'
+            ],
+            'privacy:metadata:reviews:summary'
+        );
+
+        $collection->add_database_table(
+            'local_smartgradeai_jobs',
+            [
+                'submissionid' => 'privacy:metadata:jobs:submissionid',
+                'status' => 'privacy:metadata:jobs:status',
+                'error_message' => 'privacy:metadata:jobs:error_message'
+            ],
+            'privacy:metadata:jobs:summary'
+        );
+
         return $collection;
     }
 }

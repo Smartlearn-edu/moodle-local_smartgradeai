@@ -25,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'local_smartgradeai';
-$plugin->version   = 2026020203; // YYYYMMDDXX - Bumped for Review Table
+$plugin->version   = 2026020205; // YYYYMMDDXX - Bumped for Review Table
 $plugin->requires  = 2022112800; // Requires Moodle 4.1+ (adjust as needed)
 $plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '0.1.1';
+$plugin->release   = '1.0.0';

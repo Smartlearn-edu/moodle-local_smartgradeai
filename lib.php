@@ -78,7 +78,7 @@ function local_smartgradeai_extend_settings_navigation(settings_navigation $sett
             if (get_config('local_smartgradeai', 'enable_review_mode')) {
                 $review_url = new moodle_url('/local/smartgradeai/reviews.php');
                 $node->add(
-                    'Pending AI Reviews',
+                    get_string('pendingaireviews', 'local_smartgradeai'),
                     $review_url,
                     navigation_node::TYPE_SETTING,
                     null,

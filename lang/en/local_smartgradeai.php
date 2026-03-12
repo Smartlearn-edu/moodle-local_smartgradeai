@@ -79,6 +79,16 @@ $string['review_mode'] = 'Review Mode';
 $string['review_mode_desc'] = 'If enabled, AI grades will be saved as drafts and must be approved by a teacher before becoming final.';
 
 // Review page.
+$string['pendingreviews'] = 'Pending Reviews';
+$string['pendingaireviews'] = 'Pending AI Reviews';
+$string['nopendingreviews'] = 'No pending reviews found. Good job!';
+$string['pendingreviewscount'] = 'Pending Reviews ({$a})';
+$string['student'] = 'Student';
+$string['assignment'] = 'Assignment';
+$string['course'] = 'Course';
+$string['waitingsince'] = 'Waiting Since';
+$string['action'] = 'Action';
+$string['review'] = 'Review';
 $string['reviewaigrade'] = 'Review AI Grade';
 $string['submissionby'] = 'Submission by {$a}';
 $string['aiproposedrubricscore'] = 'AI Proposed Rubric Score';

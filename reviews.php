@@ -35,8 +35,8 @@ $PAGE->set_context($context);
 
 $url = new moodle_url('/local/smartgradeai/reviews.php');
 $PAGE->set_url($url);
-$PAGE->set_title(get_string('pluginname', 'local_smartgradeai') . ': Pending Reviews');
-$PAGE->set_heading('Pending AI Reviews');
+$PAGE->set_title(get_string('pluginname', 'local_smartgradeai') . ': ' . get_string('pendingreviews', 'local_smartgradeai'));
+$PAGE->set_heading(get_string('pendingaireviews', 'local_smartgradeai'));
 
 // Custom simplified layout (admin like)
 $PAGE->set_pagelayout('report');
@@ -102,12 +102,18 @@ if (!$is_admin && !$can_grade_somewhere) {
 }
 
 if (empty($reviews)) {
-    echo $OUTPUT->notification('No pending reviews found. Good job!', 'success');
+    echo $OUTPUT->notification(get_string('nopendingreviews', 'local_smartgradeai'), 'success');
 } else {
-    echo html_writer::tag('h3', 'Pending Reviews (' . count($reviews) . ')');
+    echo html_writer::tag('h3', get_string('pendingreviewscount', 'local_smartgradeai', count($reviews)));
 
     $table = new html_table();
-    $table->head = ['Student', 'Assignment', 'Course', 'Waiting Since', 'Action'];
+    $table->head = [
+        get_string('student', 'local_smartgradeai'),
+        get_string('assignment', 'local_smartgradeai'),
+        get_string('course', 'local_smartgradeai'),
+        get_string('waitingsince', 'local_smartgradeai'),
+        get_string('action', 'local_smartgradeai'),
+    ];
     $table->data = [];
 
     foreach ($reviews as $review) {
@@ -116,7 +122,7 @@ if (empty($reviews)) {
         $time_waiting = userdate($review->timecreated);
 
         // Action Button
-        $btn = $OUTPUT->single_button($review_url, 'Review', 'get');
+        $btn = $OUTPUT->single_button($review_url, get_string('review', 'local_smartgradeai'), 'get');
 
         $table->data[] = [
             $user_fullname,
